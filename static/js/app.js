@@ -4,9 +4,9 @@ const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 // Fetch the JSON data and call bar chart function
 d3.json(url).then(function(jsonData) {
   createDropdown(jsonData.names);
+  createDemographicInfo(jsonData, jsonData.names[0]);
   createBarChart(jsonData, jsonData.names[0]);
   createBubbleChart(jsonData, jsonData.names[0]);
-  createDemographicInfo(jsonData, jsonData.names[0]);
 });
 
 // Use D3 to select the dropdown menu
@@ -60,7 +60,8 @@ function createBubbleChart(data, subjectId) {
       mode: 'markers',
       marker: {
         size: sampleValues.reverse(),
-        color: otuIds.reverse()
+        color: otuIds.reverse(),
+        colorscale: "Earth"
       },
     };
     let layout = {
@@ -73,9 +74,9 @@ function createBubbleChart(data, subjectId) {
 
 function createDemographicInfo(data, subjectId) {
   // Find the sample data for test subject "subjectId"
-  console.log('Samples', data.samples);
   console.log('Metadata', data.metadata);
-  let subjectMetadata = data.metadata.find(metadata => metadata.id === subjectId);
+  let subjectMetadata = data.metadata.filter(metadata => metadata.id == subjectId)[0];
+  console.log(subjectMetadata)
 
   // Set up metadata content string 
   let metadataString = `
@@ -97,8 +98,8 @@ function createDemographicInfo(data, subjectId) {
 // Call updatePlotly() when a change takes place to the DOM
 function optionChanged(subjectId) {
     d3.json(url).then(function(data) {
+        createDemographicInfo(data, subjectId);
         createBarChart(data, subjectId);
         createBubbleChart(data, subjectId);
-        createDemographicInfo(data, subjectId);
     });
 }
